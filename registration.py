@@ -170,14 +170,6 @@ def recalage(fixed_image, moving_image):
 
 
 if __name__ == "__main__":
-    import SimpleITK as sitk
-    import napari
-
-    def display_image(img):
-        image_np = sitk.GetArrayViewFromImage(img)
-        viewer = napari.view_image(image_np, name='Tumor Image', colormap='gray')
-        napari.run()
-    
     PATH_DATA = "Data/"
     PATH_TUMEUR1 = "case6_gre1.nrrd"
     PATH_TUMEUR2 = "case6_gre2.nrrd"
@@ -195,6 +187,3 @@ if __name__ == "__main__":
     print("Téléchargement de l'image 2 recadrée dans 'case6_gre2_registered.nrrd'...")
     output_path = os.path.join(curr_path, PATH_DATA, "case6_gre2_registered.nrrd")
     itk.imwrite(img2_registered, output_path)
-
-    #print("affichage du resultat...")
-    #display_image(sitk.ReadImage(output_path))
