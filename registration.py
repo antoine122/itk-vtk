@@ -103,8 +103,8 @@ def recalageV2(fixed_image, moving_image):
     print("optimisation...")
     optimizer = itk.RegularStepGradientDescentOptimizerv4.New()
 
-    optimizer.SetLearningRate(4.0)
-    optimizer.SetMinimumStepLength(0.001)
+    optimizer.SetLearningRate(1.0)
+    optimizer.SetMinimumStepLength(0.000001)
     optimizer.SetNumberOfIterations(200)
 
     # Metric
@@ -123,7 +123,6 @@ def recalageV2(fixed_image, moving_image):
     initial_parameters = moving_initial_transform.GetParameters()
     initial_parameters[0] = 0
     initial_parameters[1] = 0
-    initial_parameters[2] = 0
     moving_initial_transform.SetParameters(initial_parameters)
 
     registration.SetMovingInitialTransform(moving_initial_transform)
@@ -183,5 +182,5 @@ if __name__ == "__main__":
     output_path = os.path.join(curr_path, PATH_DATA, "case6_gre2_registered.nrrd")
     itk.imwrite(img2_registered, output_path)
 
-    print("affichage du resultat...")
-    display_image(sitk.ReadImage(output_path))
+    # print("affichage du resultat...")
+    # display_image(sitk.ReadImage(output_path))
