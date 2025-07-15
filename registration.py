@@ -3,16 +3,12 @@ import sys
 
 import itk
 
+"""
 def recalage(fixed_image, moving_image):
     # Info
     PixelType = itk.D
     dimension = fixed_image.GetImageDimension() # 3
     ImageType = itk.Image[PixelType, dimension]
-
-    """
-    FixedImageType = type(fixed_image)
-    MovingImageType = type(moving_image)
-    """
 
     # Transformation
     print("Création de la Transform")
@@ -80,26 +76,15 @@ def recalage(fixed_image, moving_image):
     print("Application de la transformation à l'image mobile...")
     resampler.Update()
     return resampler.GetOutput()
+"""
 
-##### RECALAGE VERSION N°2 #####
-
-def recalageV2(fixed_image, moving_image):
-    # Info
-    PixelType = itk.D
-    dimension = fixed_image.GetImageDimension() # 3
-    ImageType = itk.Image[PixelType, dimension]
-
-    """
-    FixedImageType = type(fixed_image)
-    MovingImageType = type(moving_image)
-    """
-
-    # Transformation
+def init_transform(PixelType):
     print("Création de la Transform")
     TransformType = itk.TranslationTransform[PixelType, 3]
     initialTransform = TransformType.New()
+    return TransformType, initialTransform
 
-    # Optimisation
+def init_optimizer():
     print("optimisation...")
     optimizer = itk.RegularStepGradientDescentOptimizerv4.New()
 
@@ -107,16 +92,60 @@ def recalageV2(fixed_image, moving_image):
     optimizer.SetMinimumStepLength(0.000001)
     optimizer.SetNumberOfIterations(200)
 
-    # Metric
+    return optimizer
+
+def init_metric(ImageType):
     print("Metric...")
     metric = itk.MeanSquaresImageToImageMetricv4[ImageType, ImageType].New()
-    
-    # Init Registration
+    return metric
+
+def init_registration(fixed_image, moving_image, metric, optimizer, initialTransform, ImageType):
     print("Init Registration...")
-    registration = itk.ImageRegistrationMethodv4[ImageType, ImageType].New(FixedImage=fixed_image, MovingImage=moving_image, Metric=metric,
-                                                     Optimizer=optimizer, InitialTransform=initialTransform)
-    
-    
+    registration = itk.ImageRegistrationMethodv4[ImageType, ImageType].New(
+        FixedImage=fixed_image,
+        MovingImage=moving_image,
+        Metric=metric,
+        Optimizer=optimizer, 
+        InitialTransform=initialTransform
+    )
+    return registration
+
+
+def apply_transform(fixed_image, moving_image, registration, ImageType):
+    transform = registration.GetModifiableTransform()
+    parameters = transform.GetParameters()
+    print("Translation (x, y, z) : ({:.2f}, {:.2f}, {:.2f})".format(parameters[0], parameters[1], parameters[2]))
+
+    resampler = itk.ResampleImageFilter[ImageType, ImageType].New()
+    resampler.SetInput(moving_image)
+    resampler.SetTransform(transform)
+    resampler.SetSize(fixed_image.GetLargestPossibleRegion().GetSize())
+    resampler.SetOutputOrigin(fixed_image.GetOrigin())
+    resampler.SetOutputSpacing(fixed_image.GetSpacing())
+    resampler.SetOutputDirection(fixed_image.GetDirection())
+    resampler.SetDefaultPixelValue(0)
+
+    print("Application de la transformation à l'image mobile...")
+    resampler.Update()
+
+    return resampler
+
+
+def recalage(fixed_image, moving_image):
+    # Info
+    PixelType = itk.D
+    dimension = fixed_image.GetImageDimension() # 3
+    ImageType = itk.Image[PixelType, dimension]
+
+    # Transformation
+    TransformType, initialTransform = init_transform(PixelType)
+    # Optimisation
+    optimizer = init_optimizer()
+    # Metric
+    metric = init_metric(ImageType)
+    # Init Registration
+    registration = init_registration(fixed_image, moving_image, metric, optimizer, initialTransform, ImageType)
+
     # initialisation centrée de la transformation
     print("initialisation centrée de la transformation...")
     moving_initial_transform = TransformType.New()
@@ -132,26 +161,11 @@ def recalageV2(fixed_image, moving_image):
     registration.Update()
     print("Recalage terminé!")
 
-    transform = registration.GetModifiableTransform()
-    parameters = transform.GetParameters()
-
+    # Application de la transformation sur l'image mobile
     print("Paramètres finaux de transformation :")
-    print("Translation (x, y, z) : ({:.2f}, {:.2f}, {:.2f})".format(parameters[0], parameters[1], parameters[2]))
     print("Nombre d'itérations : ", optimizer.GetCurrentIteration())
     print("Valeur finale de la métrique : ", optimizer.GetValue())
-
-    # Application de la transformation sur l'image mobile
-    resampler = itk.ResampleImageFilter[ImageType, ImageType].New()
-    resampler.SetInput(moving_image)
-    resampler.SetTransform(transform)
-    resampler.SetSize(fixed_image.GetLargestPossibleRegion().GetSize())
-    resampler.SetOutputOrigin(fixed_image.GetOrigin())
-    resampler.SetOutputSpacing(fixed_image.GetSpacing())
-    resampler.SetOutputDirection(fixed_image.GetDirection())
-    resampler.SetDefaultPixelValue(0)
-
-    print("Application de la transformation à l'image mobile...")
-    resampler.Update()
+    resampler = apply_transform(fixed_image, moving_image, registration, ImageType)
     return resampler.GetOutput()
 
 
@@ -176,11 +190,11 @@ if __name__ == "__main__":
     img2 = itk.imread(os.path.join(curr_path, PATH_DATA + PATH_TUMEUR2), pixel_type=PixelType)
 
     print("recadrage...")
-    img2_registered = recalageV2(img1, img2)
+    img2_registered = recalage(img1, img2)
 
     print("Téléchargement de l'image 2 recadrée dans 'case6_gre2_registered.nrrd'...")
     output_path = os.path.join(curr_path, PATH_DATA, "case6_gre2_registered.nrrd")
     itk.imwrite(img2_registered, output_path)
 
-    # print("affichage du resultat...")
-    # display_image(sitk.ReadImage(output_path))
+    #print("affichage du resultat...")
+    #display_image(sitk.ReadImage(output_path))
