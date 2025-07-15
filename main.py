@@ -18,12 +18,10 @@ def main():
 
     img_tumeur1 = itk.imread(os.path.join(curr_path, PATH_DATA + PATH_TUMEUR1), pixel_type=itk.F)
     img_tumeur2 = itk.imread(os.path.join(curr_path, PATH_DATA + PATH_TUMEUR2), pixel_type=itk.F)
-
-    img_tumeur2_align = registration.recalage(img_tumeur1, img_tumeur2)
    
     # Cropping and registration data
     print("Recalage des 2 scan...")
-    # TODO
+    img_tumeur2_align = registration.recalage(img_tumeur1, img_tumeur2)
 
     # Segmentation data
     print("Segmentation...")

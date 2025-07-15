@@ -43,7 +43,7 @@ qui fonctionnait bien avec des images médicales en 3D.
 - __Image Milieu__: Moving Image
 - __Image Droite__: Résultat
 
-<video src="images/test1_comp.mp4" controls></video>
+<video src="bin/test1_comp.mp4" controls></video>
 
 __Paramètres finaux de transformation :__
 - Angle de rotation (radians) : -0.00463
@@ -62,7 +62,7 @@ Au lieu de cela, nous avons opté pour l'application d'une translation.
 
 **Analyse:**
 
-<video src="images/translation_test1.mp4" controls></video>
+<video src="bin/translation_test1.mp4" controls></video>
 
 - optimizer.SetLearningRate(4.0)
 - optimizer.SetMinimumStepLength(0.001)
