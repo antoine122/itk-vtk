@@ -141,6 +141,42 @@ Ces changements n'apportent que une très petit réduction du score.
  - Les Difficultés rencontrées
  - Le résultat
 
+## Segmentation
+
+La segmentation se fait en deux parties :
+
+### 1. Adoucir l'image
+
+Cette étape a pour but de réduire le bruit dans la tumeur et de flouter la forme de la tumeur pour éviter les imprécisions.
+
+Nous avons utilisé la fonction [`itk.CurvatureFlowImageFilter`](https://docs.itk.org/projects/doxygen/en/stable/classitk_1_1CurvatureFlowImageFilter.html).
+
+---
+
+### 2. Seuillage connecté
+
+Ce seuillage commence à une position choisie et vérifie pour chaque voisin s'il est entre les seuils inférieur et supérieur.  
+L'algorithme se propage ainsi et marque toutes les positions par lesquelles il passe.
+
+À partir de nos observations, nous avons décidé d'utiliser :
+
+- La position de départ : `(90, 70, 51)`
+- Les seuils : `500` (inférieur) et `800` (supérieur)
+
+La fonction utilisée pour cet algorithme est [`itk.ConnectedThresholdImageFilter`](https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1ConnectedThresholdImageFilter.html).
+
+---
+
+Avec cet algorithme, nous avons délimité la zone de la tumeur. Voici les résultats :
+
+#### Résultat pour l'image 1 :
+
+![résultats image1](bin/seg1.png)
+
+#### Résultat pour l'image 2 (recalée) :
+
+![résultats image1](bin/seg2.png)
+
 ## Analyse et visualisation
 **A compléter**, utiliser la lib vtk
  - Methodes de calcul des différences de volume, forme, position entre 2 tumeurs
