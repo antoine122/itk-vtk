@@ -30,7 +30,32 @@ Corentin COLMEL : ...
  - Les Difficultés rencontrées
  - Le résultat
 
-### Test n°1: VersorRigid3DTransform
+Pour recalé **l'image 2** sur **l'image 1**, on à suivi cette pipeline de traitement :
+![img recadrage](bin/methode_de_recadrage.png)
+
+### Algorithme pour la métrique
+ - **MeanSquaresImageToImageMetricv4** : Calcule la moyenne des carrés des différences d’intensité entre les deux images. Plus la différence est faible, plus l’alignement est bon.
+
+ - **CorrelationImageToImageMetricv4** : Calcule la corrélation linéaire entre les intensités des deux images.
+
+**MeanSquaresImageToImageMetricv4** est bien adaptée car les deux images IRM ont une intensité comparable voxel par voxel. Elle donne des résultats rapides et stables dans ce contexte homogène.
+
+
+### Algorithme pour l'optimiseur
+ - **RegularStepGradientDescentOptimizerv4** : Descente de gradient avec un pas régulier qui diminue progressivement.
+
+ - **GradientDescentOptimizerv4** : Descente de gradient classique avec un pas fixe.
+
+ - **AmoebaOptimizerv4** : Méthode de Nelder-Mead, sans utiliser de dérivées.
+
+**RegularStepGradientDescentOptimizerv4**  converge bien et est plus tolérant au bruit. D’autres méthodes comme Amoeba ou GradientDescent étaient soit trop sensibles aux paramètres initiaux, soit plus lentes à converger.
+
+
+### Algorithme pour la transformation
+
+Pour la transformation, nous avons regarder 2 grand cas :
+
+#### Test n°1: VersorRigid3DTransform
 
 Pour commencer, on a voulu tester de faire un recalage en appliquant une translation et une rotation. Pour cela on a utilisé VersorRigid3DTransform
 qui fonctionnait bien avec des images médicales en 3D.
@@ -54,7 +79,7 @@ __Paramètres finaux de transformation :__
 
 Nous pouvons constater que le résultat est assez mauvais, probablement en raison de l'inclusion d'une transformation de rotation.
 
-### Test n°2: TranslationTransform
+#### Test n°2: TranslationTransform
 
 Au lieu de cela, nous avons opté pour l'application d'une translation.
 
@@ -99,6 +124,15 @@ Nombre d'itérations :  27
 Valeur finale de la métrique :  11180.221791522592
 
 Ces changements n'apportent que une très petit réduction du score.
+
+### récapitulatif des fonction utilisé
+
+| Méthode            | Algorithme                              | Utilité                                                                      | Justification du choix                                                                           |
+| :----------------: | :-------------------------------------: | :--------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------: |
+| **Transformation** | `TranslationTransform`                  | Modélise un simple décalage en X, Y, Z                                       | Les images proviennent du même patient, sans rotation ni déformation importante              |
+| **Optimisation**   | `RegularStepGradientDescentOptimizerv4` | Cherche les meilleurs paramètres de transformation en minimisant la métrique | Méthode simple, stable et efficace pour des problèmes bien posés comme notre cas                       |
+| **Métrique**       | `MeanSquaresImageToImageMetricv4`       | Compare directement les intensités voxel à voxel entre les deux images       | Les images étant de même modalité et contraste, la comparaison d’intensité est adaptée et rapide |
+
 
 ## Segmentation des tumeurs
 **A compléter**, utiliser la lib itk
