@@ -78,26 +78,27 @@ def recalage(fixed_image, moving_image):
     return resampler.GetOutput()
 """
 
-def init_transform(PixelType):
+def init_transform(PixelType, dimension):
     print("Création de la Transform")
-    TransformType = itk.TranslationTransform[PixelType, 3]
+    TransformType = itk.TranslationTransform[PixelType, dimension]
     initialTransform = TransformType.New()
     return TransformType, initialTransform
+
 
 def init_optimizer():
     print("optimisation...")
     optimizer = itk.RegularStepGradientDescentOptimizerv4.New()
-
     optimizer.SetLearningRate(1.0)
     optimizer.SetMinimumStepLength(0.000001)
     optimizer.SetNumberOfIterations(200)
-
     return optimizer
+
 
 def init_metric(ImageType):
     print("Metric...")
     metric = itk.MeanSquaresImageToImageMetricv4[ImageType, ImageType].New()
     return metric
+
 
 def init_registration(fixed_image, moving_image, metric, optimizer, initialTransform, ImageType):
     print("Init Registration...")
@@ -115,7 +116,6 @@ def apply_transform(fixed_image, moving_image, registration, ImageType):
     transform = registration.GetModifiableTransform()
     parameters = transform.GetParameters()
     print("Translation (x, y, z) : ({:.2f}, {:.2f}, {:.2f})".format(parameters[0], parameters[1], parameters[2]))
-
     resampler = itk.ResampleImageFilter[ImageType, ImageType].New()
     resampler.SetInput(moving_image)
     resampler.SetTransform(transform)
@@ -124,10 +124,8 @@ def apply_transform(fixed_image, moving_image, registration, ImageType):
     resampler.SetOutputSpacing(fixed_image.GetSpacing())
     resampler.SetOutputDirection(fixed_image.GetDirection())
     resampler.SetDefaultPixelValue(0)
-
     print("Application de la transformation à l'image mobile...")
     resampler.Update()
-
     return resampler
 
 
@@ -138,7 +136,7 @@ def recalage(fixed_image, moving_image):
     ImageType = itk.Image[PixelType, dimension]
 
     # Transformation
-    TransformType, initialTransform = init_transform(PixelType)
+    TransformType, initialTransform = init_transform(PixelType, dimension)
     # Optimisation
     optimizer = init_optimizer()
     # Metric
