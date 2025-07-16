@@ -16,8 +16,9 @@ def main():
     print("Chargement des données...")
     curr_path = os.path.dirname(__file__)
 
-    img_tumeur1 = itk.imread(os.path.join(curr_path, PATH_DATA + PATH_TUMEUR1), pixel_type=itk.F)
-    img_tumeur2 = itk.imread(os.path.join(curr_path, PATH_DATA + PATH_TUMEUR2), pixel_type=itk.F)
+    PixelType = itk.D
+    img_tumeur1 = itk.imread(os.path.join(curr_path, PATH_DATA + PATH_TUMEUR1), pixel_type=PixelType)
+    img_tumeur2 = itk.imread(os.path.join(curr_path, PATH_DATA + PATH_TUMEUR2), pixel_type=PixelType)
    
     # Cropping and registration data
     print("Recalage des 2 scan...")
@@ -25,7 +26,7 @@ def main():
 
     # Segmentation data
     print("Segmentation...")
-    # TODO
+    segmentation.segment(img_tumeur1, img_tumeur2_align, (90,70,51), itk.Image[itk.D, 3])
 
     # Visualisation and interface
     print("Visualisation...")
