@@ -37,19 +37,26 @@ def segment(image1, image2, seed, imgType):
     threshold.Update()
 
     image1Seg = threshold.GetOutput()
+
+    threshold = itk.ConnectedThresholdImageFilter[imgType, imgType].New()
     threshold.SetInput(image2Smoothed)
+    threshold.SetLower(lbound)
+    threshold.SetUpper(ubound)
+
+    threshold.SetReplaceValue(255)
+    threshold.SetSeed(seed)
     threshold.Update()
     image2Seg = threshold.GetOutput()
 
     # print("showing images")
-    # fig, axes = plt.subplots(3, 2, figsize=(8, 10))
-    # axes[0, 0].imshow(image1Seg[seed[0] - 35, :, :], cmap='gray')
-    # axes[0, 1].imshow(image2Seg[seed[0] - 35, :, :], cmap='gray')
-    # axes[1, 0].imshow(image1Seg[:, seed[1], :], cmap='gray')
-    # axes[1, 1].imshow(image2Seg[:, seed[1], :], cmap='gray')
-    # axes[2, 0].imshow(image1Seg[:, :, seed[2] + 30], cmap='gray')
-    # axes[2, 1].imshow(image2Seg[:, :, seed[2] + 30], cmap='gray')
-    # plt.show()
+    fig, axes = plt.subplots(3, 2, figsize=(8, 10))
+    axes[0, 0].imshow(image2[seed[0] - 35, :, :], cmap='gray')
+    axes[0, 1].imshow(image2Seg[seed[0] - 35, :, :], cmap='gray')
+    axes[1, 0].imshow(image2[:, seed[1], :], cmap='gray')
+    axes[1, 1].imshow(image2Seg[:, seed[1], :], cmap='gray')
+    axes[2, 0].imshow(image2[:, :, seed[2] + 30], cmap='gray')
+    axes[2, 1].imshow(image2Seg[:, :, seed[2] + 30], cmap='gray')
+    plt.show()
 
     return (image1Seg, image2Seg)
 
