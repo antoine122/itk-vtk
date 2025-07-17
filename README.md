@@ -15,20 +15,15 @@ python main.py
 ```
 
 ## Répartition du travail
-Antoine HAVARD : ...
+Antoine HAVARD : Recadrage, architecture
 
-Emma CASAGRANDE : ...
+Emma CASAGRANDE : Recadrage
 
-Salomé BERGER : ...
+Salomé BERGER : Visualisation
 
-Corentin COLMEL : ...
+Corentin COLMEL : Segmentation
 
 ## Recalage d'images
-**A compléter**, utiliser la lib itk
- - Méthode utilisée
- - Pourquoi cette méthodes
- - Les Difficultés rencontrées
- - Le résultat
 
 Pour recalé **l'image 2** sur **l'image 1**, on à suivi cette pipeline de traitement :
 ![img recadrage](bin/methode_de_recadrage.png)
@@ -135,13 +130,6 @@ Ces changements n'apportent que une très petit réduction du score.
 
 
 ## Segmentation des tumeurs
-**A compléter**, utiliser la lib itk
- - Méthode utilisée
- - Pourquoi cette méthodes
- - Les Difficultés rencontrées
- - Le résultat
-
-## Segmentation
 
 La segmentation se fait en deux parties :
 
@@ -177,7 +165,7 @@ Avec cet algorithme, nous avons délimité la zone de la tumeur. Voici les résu
 
 ![résultats image1](bin/seg2.png)
 
-## Analyse et visualisation
+## Visualisation
 
 Cette partie repose sur l'utilisation de la bibliothèque VTK pour visualiser les volumes segmentés et mettre en évidence leur évolution dans le temps.
 
