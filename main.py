@@ -26,11 +26,12 @@ def main():
 
     # Segmentation data
     print("Segmentation...")
-    # TODO
+    # segmentation.segment(img_tumeur1, img_tumeur2_align, (90,70,51), itk.Image[itk.D, 3])
+    seg1, seg2 = segmentation.segment(img_tumeur1, img_tumeur2_align, (90,70,51), itk.Image[itk.D, 3])
 
-    # Visualisation and interface
+    # Visualisation
     print("Visualisation...")
-    # TODO
+    visualization.show_surfaces(seg1, seg2)
 
 if __name__ == "__main__":
     main()
