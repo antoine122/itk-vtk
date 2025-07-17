@@ -6,7 +6,7 @@ Ce projet a pour objectif de réaliser le suivi des changements d'une tumeur à 
 
  2. Installez les dépendances nécessaires :
 ```sh
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 
  3. Exécutez le script principal :
@@ -15,9 +15,9 @@ python main.py
 ```
 
 ## Répartition du travail
-Antoine HAVARD : Recadrage, architecture
+Antoine HAVARD : Recalage, architecture
 
-Emma CASAGRANDE : Recadrage
+Emma CASAGRANDE : Recalage
 
 Salomé BERGER : Visualisation
 
