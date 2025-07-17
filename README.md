@@ -141,8 +141,6 @@ Ces changements n'apportent que une très petit réduction du score.
  - Les Difficultés rencontrées
  - Le résultat
 
----
-
 ## Analyse et visualisation
 
 Cette partie repose sur l'utilisation de la bibliothèque VTK pour visualiser les volumes segmentés et mettre en évidence leur évolution dans le temps.
