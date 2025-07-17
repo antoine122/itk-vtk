@@ -28,10 +28,11 @@ def main():
     print("Segmentation...")
     # segmentation.segment(img_tumeur1, img_tumeur2_align, (90,70,51), itk.Image[itk.D, 3])
     seg1, seg2 = segmentation.segment(img_tumeur1, img_tumeur2_align, (90,70,51), itk.Image[itk.D, 3])
+    seg2_align = registration.recalage(seg1, seg2)
 
     # Visualisation
     print("Visualisation...")
-    visualization.show_surfaces(seg1, seg2)
+    visualization.show_surfaces(seg1, seg2_align)
 
 if __name__ == "__main__":
     main()

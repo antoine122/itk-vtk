@@ -178,7 +178,57 @@ Avec cet algorithme, nous avons délimité la zone de la tumeur. Voici les résu
 ![résultats image1](bin/seg2.png)
 
 ## Analyse et visualisation
-**A compléter**, utiliser la lib vtk
- - Methodes de calcul des différences de volume, forme, position entre 2 tumeurs
- - Méthode de visualisation
- - Guide et fonctionnement
+
+Cette partie repose sur l'utilisation de la bibliothèque VTK pour visualiser les volumes segmentés et mettre en évidence leur évolution dans le temps.
+
+### Méthodes de calcul des différences
+
+À partir des deux segmentations binaires de la tumeur (images ITK `itk_seg1` et `itk_seg2`), le code procède à :
+
+* **Un calcul de volume** pour chaque segmentation :
+  Le volume est obtenu en multipliant le nombre de voxels segmentés par le volume élémentaire d’un voxel (produit des espacements dans chaque direction).
+
+* **Une comparaison voxel à voxel** :
+
+  * Les voxels présents dans `itk_seg2` mais absents de `itk_seg1` sont considérés comme une **croissance** tumorale.
+  * Les voxels présents dans `itk_seg1` mais absents de `itk_seg2` sont considérés comme une **réduction** tumorale.
+
+* **Affichage des statistiques** :
+
+  * Volume de la tumeur au temps 1 et au temps 2
+  * Croissance en volume (mm³)
+  * Réduction en volume (mm³)
+  * Différence nette (gain ou perte total)
+
+### Méthode de visualisation
+
+L'affichage 3D repose sur plusieurs étapes :
+
+1. **Conversion des images ITK en images VTK** :
+   Une conversion mémoire est réalisée pour permettre à VTK d'accéder directement aux données segmentées.
+
+2. **Extraction de surface par `vtkMarchingCubes`** :
+   Chaque volume binaire est transformé en surface polygonale 3D (isosurface) pour en faciliter la représentation.
+
+3. **Lissage des maillages avec `vtkSmoothPolyDataFilter`** :
+   Les surfaces générées sont filtrées pour éliminer l'effet de “voxelisation” en appliquant un lissage itératif non réducteur.
+
+4. **Affichage des différents volumes** :
+
+   * **Tumeur au temps 1** : rouge transparent
+   * **Tumeur au temps 2** : vert transparent
+   * **Croissance (voxels nouveaux)** : cyan opaque
+   * **Réduction (voxels disparus)** : magenta opaque
+
+5. **Texte à l’écran** :
+   Un objet `vtkTextActor` est utilisé pour afficher les volumes mesurés, la variation totale ainsi que les volumes de croissance et de réduction.
+
+### Fonctionnement et guide d'utilisation
+
+La visualisation se fait via la fonction `show_surfaces(itk_seg1, itk_seg2)`, qui reçoit deux images ITK binaires (segmentations de la tumeur à deux dates) et affiche une scène interactive avec :
+
+* Rotation et zoom possibles à la souris
+* Mise en évidence directe des différences spatiales
+* Affichage des métriques de comparaison
+
+Cette approche permet une **analyse conjointe quantitative et qualitative** de l’évolution tumorale, dans un référentiel spatial commun (les deux images ayant été préalablement recalées).
